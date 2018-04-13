@@ -6,6 +6,11 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
+  devServer: {
+    proxy: {
+      "/data": "http://vizceral-api:5000"
+    },
+  },
   entry: './src/app.jsx',
   output: {
     path: path.join(__dirname, 'dist'),

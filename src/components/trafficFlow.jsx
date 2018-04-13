@@ -46,7 +46,7 @@ class TrafficFlow extends React.Component {
       redirectedFrom: undefined,
       selectedChart: undefined,
       displayOptions: {
-        allowDraggingOfNodes: false,
+        allowDraggingOfNodes: true,
         showLabels: true
       },
       currentGraph_physicsOptions: {
@@ -150,8 +150,8 @@ class TrafficFlow extends React.Component {
 
   beginSampleData () {
     this.traffic = { nodes: [], connections: [] };
-    request.get('sample_data.json')
-      .set('Accept', 'application/json')
+
+    request.get('/data')
       .end((err, res) => {
         if (res && res.status === 200) {
           this.traffic.clientUpdateTime = Date.now();
@@ -163,6 +163,7 @@ class TrafficFlow extends React.Component {
   componentDidMount () {
     this.checkInitialRoute();
     this.beginSampleData();
+    this.refreshInterval = setInterval(() => {this.beginSampleData()}, 60*1000);
 
     // Listen for changes to the stores
     filterStore.addChangeListener(this.filtersChanged);
@@ -170,6 +171,7 @@ class TrafficFlow extends React.Component {
 
   componentWillUnmount () {
     filterStore.removeChangeListener(this.filtersChanged);
+    clearInterval(this.refreshInterval);
   }
 
   shouldComponentUpdate (nextProps, nextState) {
